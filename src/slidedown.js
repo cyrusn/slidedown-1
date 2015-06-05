@@ -48,7 +48,20 @@ var marked = require('marked'),
       },
       "slidedown": {
         title: false,
-        showImageCaption: false
+        showImageCaption: false,
+        enableMathJax: false,
+      },
+      "mathjax": {
+        src: "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
+        tex2jax: {
+          inlineMath: [['$', '$'],['$$$', '$$$']]
+        },
+        "HTML-CSS": {
+          linebreaks: {
+            automatic: true
+          },
+          scale: 70
+        }
       }
     },
 
@@ -184,6 +197,7 @@ var marked = require('marked'),
         window.addEventListener('hashchange', focusTargetSlide);
       });
 
+      parseMathJaxEquation();
       return slidedown;
     },
 
@@ -228,6 +242,17 @@ var marked = require('marked'),
         options, Slidedown.prototype.options);
     }
   };
+
+  function parseMathJaxEquation(){
+    var options = Slidedown.prototype.options;
+    if (options.slidedown.enableMathJax){
+      var mathjax = document.createElement('script');
+      mathjax.type = "text/javascript";
+      mathjax.src = options.mathjax.src;
+      mathjax.text = 'MathJax.Hub.Config(' + JSON.stringify(options.mathjax) + ")";
+      document.head.appendChild(mathjax);
+    }
+  }
 
   function whenReady(callback) {
     if (document.readyState === "complete") {

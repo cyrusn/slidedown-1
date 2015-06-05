@@ -153,9 +153,49 @@ Duis aute irure dolor in ***reprehenderit*** in voluptate velit esse cillum dolo
 Excepteur sint ~~occaecat~~ cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 ***
+# [MathJax][mathjax]
+
+You can type equatons, `TeX` [syntax][mathjax] are typed inside `$ ... $` for inline, or `$$ ... $$` for paragraph.
+
+
+### Example
+
+>My math is so rusty that I barely remember the *quadratic equation*:
+
+>When $$$a \ne 0$$$, there are two solutions to $ax^2 + bx + c = 0$ and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$
+
+### Syntax
+```md
+>My math is so rusty that I barely remember the *quadratic equation*:
+
+>When $$$a \ne 0$$$, there are two solutions to $ax^2 + bx + c = 0$ and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$
+```
+
+***
+# [Chemistry Equation][chem]
+
+Typing **Chemistry Equation** just like math , inline sytle like $\ce{C6H5}$, or paragraph style like below:
+$$
+\ce{C6H5-CHO}
+\ce{$A$ ->[\ce{+H2O}] $B$}
+\ce{SO4^2- + Ba^2+ -> BaSO4 v}
+$$
+
+``` tex
+% example code of chemistry equation
+\ce{C6H5-CHO}
+\ce{$A$ ->[\ce{+H2O}] $B$}
+\ce{SO4^2- + Ba^2+ -> BaSO4 v}
+```
+
+***
 # End
 
 [basic]: https://help.github.com/articles/markdown-basics/
 [gfm]: https://help.github.com/articles/github-flavored-markdown/
 [image1]: http://2.bp.blogspot.com/-dxJbW0CG8Zs/TmkoMA5-cPI/AAAAAAAAAqw/fQpsz9GpFdo/s1600/voyage-dans-la-lune-1902-02-g.jpg
 [link-break]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#lines
+[mathjax]: http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference
+[chem]: ftp://ftp.comp.hkbu.edu.hk/pub/TeX/CTAN/macros/latex/contrib/mhchem/mhchem.pdf

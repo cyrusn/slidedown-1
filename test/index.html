@@ -9,10 +9,24 @@
     <link rel="stylesheet" type="text/css" href="../dist/slidedown.build.css" />
     <script type="text/javascript" src="lib/hammer.js"></script>
     <script type="text/javascript" src="../dist/slidedown.build.js"></script>
-
     <script>
         // console.log(document.location);
         var params = Slidedown.parseQuery();
+
+        Slidedown.setOptions({
+            slidedown: {
+                // you may even do the following
+                // enableMathJax: params.mathjax || false
+                // localhost:8080/?mathjax&src=index.md
+                enableMathJax: true,
+            },
+            mathjax: {
+                TeX: {
+                  extensions: ["mhchem.js"]
+                }
+            },
+        });
+
         var mdSource = params.src || 'md/test.md';
         Slidedown.fromXHR(mdSource).to('#slides');
     </script>

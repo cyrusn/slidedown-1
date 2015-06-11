@@ -7,7 +7,7 @@ var minifyCss = require('gulp-minify-css');
 var sass = require('gulp-sass');
 var gutil = require('gulp-util');
 
-var SRC = 'src/slidedown.js';
+var SRC = 'src/*.js';
 var STYLE = 'style/*.scss';
 var DEST = 'dist/';
 if (process.env.SLIDEDOWN_DEST !== undefined) {

@@ -16,19 +16,32 @@
     "url": "https://github.com/slidedown/slidedown/issues"
   },
   "homepage": "https://github.com/slidedown/slidedown",
+  "scripts": {
+    "build": "npm run build-js && npm run build-css",
+    "build-js": "NODE_ENV=production browserify ./src/slidedown.js | uglifyjs -cm > ./dist/slidedown.build.min.js",
+    "watch-js": "watchify ./src/slidedown.js -o ./dist/slidedown.build.js -dv",
+    "build-css": "node-sass --include-path style style/slidedown.scss ./dist/slidedown.build.min.css --output-style compressed",
+    "watch-css": "nodemon -e scss -x 'node-sass --include-path style style/slidedown.scss ./dist/slidedown.build.css'"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
   "dependencies": {
     "deep-defaults": "^1.0.3",
     "highlight.js": "^8.1.0",
     "marked": "^0.3.3"
   },
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-browserify": "^0.5.1",
-    "gulp-concat-css": "^2.2.0",
-    "gulp-minify-css": "^1.1.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.0.0",
-    "gulp-uglify": "^1.2.0",
-    "gulp-util": "^3.0.4"
+    "node-sass": "^3.4.2",
+    "nodemon": "^1.8.1",
+    "uglifyjs": "^2.4.10",
+    "watchify": "^3.7.0"
   }
 }

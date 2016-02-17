@@ -153,6 +153,25 @@ Duis aute irure dolor in ***reprehenderit*** in voluptate velit esse cillum dolo
 Excepteur sint ~~occaecat~~ cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 ***
+# [PlantUML](http://plantuml.sourceforge.net/)
+
+```plantuml
+@startuml
+left to right direction
+skinparam packageStyle rect
+actor customer
+actor clerk
+rectangle checkout {
+  customer -- (checkout)
+  (checkout) .> (payment) : include
+  (help) .> (checkout) : extends
+  (checkout) -- clerk
+}
+@enduml
+
+```
+
+***
 # End
 
 [basic]: https://help.github.com/articles/markdown-basics/

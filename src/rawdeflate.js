@@ -1667,11 +1667,11 @@ return function deflate(str, level) {
 
 })();
 
-onmessage = function worker(m) {
+var onmessage = function worker(m) {
   postMessage(deflate(m.data, 9));
 };
 
-onconnect = function sharedWorker(e) {
+var onconnect = function sharedWorker(e) {
   var port = e.ports[0];
   port.onmessage = function(m) {
     port.postMessage(deflate(m.data, 9));

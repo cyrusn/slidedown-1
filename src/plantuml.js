@@ -1,8 +1,8 @@
 var deflate = require('./rawdeflate.js');
 
 function encode64(data) {
-  r = "";
-  for (i = 0; i < data.length; i += 3) {
+  var r = "";
+  for (var i = 0; i < data.length; i += 3) {
     if (i + 2 == data.length) {
       r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0);
     } else if (i + 1 == data.length) {
@@ -15,11 +15,11 @@ function encode64(data) {
 }
 
 function append3bytes(b1, b2, b3) {
-  c1 = b1 >> 2;
-  c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
-  c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
-  c4 = b3 & 0x3F;
-  r = "";
+  var c1 = b1 >> 2;
+  var c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+  var c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
+  var c4 = b3 & 0x3F;
+  var r = "";
   r += encode6bit(c1 & 0x3F);
   r += encode6bit(c2 & 0x3F);
   r += encode6bit(c3 & 0x3F);

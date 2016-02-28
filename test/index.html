@@ -8,13 +8,13 @@
   <link rel="stylesheet" type="text/css" href="./lib/solarized_dark.css" />
   <link rel="stylesheet" type="text/css" href="../dist/slidedown.build.css" />
   <script type="text/javascript" src="../dist/slidedown.build.js"></script>
-  <script>
+  <script type="text/javascript">
     var params = Slidedown.parseQuery();
     Slidedown.setOptions({
       slidedown: {
         // to enable mathjax, add ?mathjax
         // example ?mathjax&?src=index.md
-        enableMathJax: params.mathjax || false,
+        enableMathJax: params.mathjax || false
       },
       mathjax: {
         TeX: {

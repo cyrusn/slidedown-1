@@ -240,8 +240,9 @@ const XMLHttpRequest = window.XMLHttpRequest;
     let html;
 
     if (lang === 'plantuml') {
+      const link = plantuml(code);
       if (!navigator.onLine) return '<blockquote><p>Image of PlantUML <strong>cannot</strong> be loaded, image can only be loaded when connected to <strong>internet</strong></p></blockquote>';
-      return '<img class="plantuml" src="' + plantuml(code) + '"/>';
+      return '<a href="' + link + '" target="_blank"><img class="plantuml" src="' + link + '"/></a>';
     }
 
     try {

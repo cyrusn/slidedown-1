@@ -538,7 +538,7 @@ var marked = require('marked'),
     return '<img src="' + href + '" alt="' + text +'"/>';
   };
 
-  CustomRenderer.prototype.code = function code(code, lang) {
+  CustomRenderer.prototype.code = function (code, lang) {
     var html;
 
     try {

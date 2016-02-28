@@ -12,7 +12,9 @@
     var params = Slidedown.parseQuery();
     Slidedown.setOptions({
       slidedown: {
-        enableMathJax: true,
+        // to enable mathjax, add ?mathjax
+        // example ?mathjax&?src=index.md
+        enableMathJax: params.mathjax || false,
       },
       mathjax: {
         TeX: {

@@ -1,6 +1,13 @@
 var marked = require('marked'),
     hljs   = require('highlight.js'),
     deepDefaults = require('deep-defaults'),
+    navigation = require('./navigation.js'),
+    helper = require('./helper.js'),
+    layout = require('./layout.js'),
+    instruction = require('./instruction.js'),
+    utility = require('./utility.js'),
+    element = require('./element.js'),
+    parseMathJaxEquation = require('./parseMathJax'),
     plantuml = require('./plantuml.js');
 
 (function() {
@@ -8,36 +15,6 @@ var marked = require('marked'),
   function Slidedown() {
     this.target = 'body';
   }
-
-  var slideLayouts = {
-    'title-only': { pattern: /^H1$/ },
-    'title-subtitle': { pattern: /^H1,H2$/ },
-    'side-by-side': {
-      pattern: /^H1,.+,H1,.+$/,
-      postprocess: function(content) {
-        var left = document.createElement('DIV');
-        left.className = 'left';
-        // content.appendChild(left);
-
-        // Insert the first <H1> and the stuff below it (but before the second
-        // <H2>) into the left pane.
-        do {
-          left.appendChild(content.firstChild);
-        } while (content.firstChild.tagName !== 'H1');
-
-        var right = document.createElement('DIV');
-        right.className = 'right';
-
-        // Insert everything else into the right pane.
-        do {
-          right.appendChild(content.firstChild);
-        } while (content.firstChild);
-
-        content.appendChild(left);
-        content.appendChild(right);
-      }
-    }
-  };
 
   Slidedown.prototype = {
     // default object, can be set by setOptions()
@@ -50,7 +27,7 @@ var marked = require('marked'),
       "slidedown": {
         title: false,
         showImageCaption: false,
-        enableMathJax: false,
+        enableMathJax: false
       },
       "mathjax": {
         src: "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
@@ -99,7 +76,7 @@ var marked = require('marked'),
     to: function to(target, cb) {
       this.target = target;
 
-      whenReady(function() {
+      helper.whenReady(function() {
         if (typeof cb === "function") {
           cb();
         }
@@ -119,8 +96,8 @@ var marked = require('marked'),
     fromElements: function fromElements(elements) {
       var slidedown = this;
 
-      whenReady(function() {
-        eachSlide(elements, function(slide, number) {
+      helper.whenReady(function() {
+        element.eachSlide(elements, function(slide, number) {
           var element = document.createElement('DIV');
           element.id = 'slide-' + number;
           element.className = 'slide';
@@ -131,36 +108,36 @@ var marked = require('marked'),
           content.innerHTML = slide.html;
           element.appendChild(content);
 
-          var layout = slideLayouts[slide.layout];
-          if (layout && typeof layout.postprocess === 'function') {
-            layout.postprocess(content);
+          var slideLayout = layout.slideLayouts[slide.layout];
+          if (slideLayout && typeof slideLayout.postprocess === 'function') {
+            slideLayout.postprocess(content);
           }
 
           if (number === 1) {
-            addNavigationInstructions(element);
+            instruction.addNavigationInstructions(element);
           }
 
           slidedown.append(element);
         });
 
         // Attach left/right keyboard shortcuts
-        handleKey(39, nextSlide);
-        handleKey(37, prevSlide);
+        navigation.handleKey(39, navigation.nextSlide);
+        navigation.handleKey(37, navigation.prevSlide);
 
         // more key feature:
         // using `home` key to go to first page
-        handleKey(36, goToSlide(1));
+        navigation.handleKey(36, navigation.goToSlide(1));
 
         // using `end` key to go to last page
         var numSlides = document.getElementsByClassName('slide').length;
-        handleKey(35, goToSlide(numSlides));
+        navigation.handleKey(35, navigation.goToSlide(numSlides));
 
         // using `t` to go to toc page;
-        handleKey(84, goToToc);
+        navigation.handleKey(84, navigation.goToToc);
 
         // using `r` key to go to root page
         // useful when the default md shows a listing of md's
-        handleKey(82, goToRoot);
+        navigation.handleKey(82, navigation.goToRoot);
 
         // Hammer integration with feature detection
         if (typeof Hammer !== 'undefined') {
@@ -173,37 +150,37 @@ var marked = require('marked'),
             });
 
             // swipe left and right to change slide
-            hammer.on('swipeleft', nextSlide);
-            hammer.on('swiperight', prevSlide);
+            hammer.on('swipeleft', navigation.nextSlide);
+            hammer.on('swiperight', navigation.prevSlide);
 
             // tap to flip slides
-            hammer.on('tap', handleTap);
+            hammer.on('tap', navigation.handleTap);
 
             // press and hold to go to root page
-            hammer.on('press', goToRoot);
+            hammer.on('press', navigation.goToRoot);
 
             // double tap to go to toc page
-            hammer.on('doubletap', goToToc);
+            hammer.on('doubletap', navigation.goToToc);
           }(Hammer));
         }
 
         // Change title to the first h1 of md
-        changeTitle();
+        utility.changeTitle(Slidedown.prototype.options);
 
         // Generate TOC if #toc is found
-        generateTOC();
+        utility.generateTOC();
 
         // Focus on the target slide (or first, by default)
-        focusTargetSlide();
-        window.addEventListener('hashchange', focusTargetSlide);
+        navigation.focusTargetSlide();
+        window.addEventListener('hashchange', navigation.focusTargetSlide);
       });
 
-      parseMathJaxEquation();
+      parseMathJaxEquation(Slidedown.prototype.options);
       return slidedown;
     },
 
     fromHTML: function fromHTML(html) {
-      var elements = parseHTML(html);
+      var elements = element.parseHTML(html);
       return this.fromElements(elements);
     },
 
@@ -223,7 +200,7 @@ var marked = require('marked'),
 
     fromXHR: function fromXHR(title) {
       var slidedown = this,
-          format    = inferFormat(title);
+          format    = helper.inferFormat(title);
 
       var request = new XMLHttpRequest();
       request.open('GET', title);
@@ -243,315 +220,6 @@ var marked = require('marked'),
         options, Slidedown.prototype.options);
     }
   };
-
-  function parseMathJaxEquation(){
-    var options = Slidedown.prototype.options;
-    if (options.slidedown.enableMathJax){
-      var mathjax = document.createElement('script');
-      mathjax.type = "text/javascript";
-      mathjax.src = options.mathjax.src;
-      mathjax.text = 'MathJax.Hub.Config(' + JSON.stringify(options.mathjax) + ")";
-      document.head.appendChild(mathjax);
-    }
-  }
-
-  function whenReady(callback) {
-    if (document.readyState === "complete") {
-      setTimeout(callback, 0);
-      return;
-    }
-
-    window.addEventListener('load', callback);
-  }
-
-  function inferFormat(title) {
-    var extension = title.split('.').pop();
-
-    switch (extension) {
-      case 'htm':
-      case 'html':
-        return 'HTML';
-
-      case 'md':
-      case 'markdown':
-      default:
-        return 'Markdown';
-    }
-  }
-
-  function parseHTML(html) {
-    var wrapper = document.createElement('DIV');
-    wrapper.innerHTML = html;
-    return wrapper.children;
-  }
-
-  function eachSlide(doc, callback) {
-    var parts   = [],
-        counter = 1;
-
-    forEach(doc, function(element) {
-      if (element.tagName === 'HR') {
-        callback(createSlide(parts), counter++);
-        parts = [];
-        return;
-      }
-
-      parts.push(element);
-    });
-
-    if (parts.length > 0) {
-      callback(createSlide(parts), counter++);
-    }
-  }
-
-  function forEach(collection, callback) {
-    return Array.prototype.forEach.call(collection, callback);
-  }
-
-  function createSlide(parts) {
-    return {
-      layout: getSlideLayout(parts),
-      html: parts.map(function(part) { return part.outerHTML; }).join('')
-    };
-  }
-
-  function getSlideLayout(parts) {
-    var key = parts.map(function(part) { return part.tagName; }).join(',');
-
-    for (var layout in slideLayouts) {
-      if (slideLayouts[layout].pattern.test(key)) {
-        return layout;
-      }
-    }
-
-    return 'default';
-  }
-
-  function addNavigationInstructions(element) {
-    // prepare instruction data
-    var keyboard = {
-      title: "Keyboard",
-      instructions: [
-        'Use left + right arrow keys',
-        'Use home/ end key to go to first/ last page',
-        'Use r key to go to root page',
-        'Use t key to go to Table of Content'
-      ]
-    };
-
-    var touch = {
-      title: "Touch / Mouse",
-      instructions: [
-        'Tap or click on the left/right sides to change slide',
-        "Swipe left and right to change slide",
-        "Press and hold to go to root page",
-        "Double tap to go to TOC page"
-      ]
-    };
-
-    // include keyboard instructions by default
-    var instructionArray = [ keyboard ];
-    if (typeof Hammer !== 'undefined') {
-      // include touch instructions if Hammer is used
-      // use column layout
-      keyboard.className = 'left';
-      touch.className = 'right';
-      instructionArray.push(touch);
-    }
-
-    // create in-memory DOM objects
-    var navInstructions = document.createElement('DIV');
-    navInstructions.className = 'navigation-instructions';
-    navInstructions.setAttribute('data-layout', 'side-by-side');
-    forEach(instructionArray, function (item) {
-      navInstructions.appendChild(createInstructionElement(item));
-    });
-
-    var footer = document.createElement('FOOTER');
-    footer.appendChild(navInstructions);
-    // add to DOM
-    element.appendChild(footer);
-
-    // helper function
-    function createInstructionElement(options) {
-      // console.log(options);
-      var instructions = document.createElement('DIV');
-      if (options.className) {
-        instructions.className = options.className;
-      }
-
-      var label = document.createElement('SPAN');
-      label.className = "instructions-title";
-      label.textContent = options.title;
-      instructions.appendChild(label);
-
-      var list = document.createElement('UL');
-      instructions.appendChild(list);
-
-      forEach(options.instructions, function(instruction) {
-        var listItem = document.createElement('LI');
-        listItem.textContent = instruction;
-        list.appendChild(listItem);
-      });
-
-      return instructions;
-    }
-  }
-
-  function removeClass(element, className) {
-    if (!element) { return; }
-    element.classList.remove(className);
-  }
-
-  function addClass(element, className) {
-    if (!element) { return; }
-    element.classList.add(className);
-  }
-
-  function handleKey(keyCode, callback) {
-    document.addEventListener('keydown', function(e) {
-      if (e.keyCode === keyCode) {
-        callback();
-      }
-    });
-  }
-
-  function handleTap(event) {
-    var tapLocation = event.center.x / window.innerWidth;
-    if (tapLocation < 0.1) {
-      prevSlide();
-    } else if (tapLocation > 0.9) {
-      nextSlide();
-    }
-  }
-
-  function nextSlide() {
-    var current   = document.querySelector('.slide.current'),
-        prev      = current.previousElementSibling,
-        next      = current.nextElementSibling,
-        following = next && next.nextElementSibling;
-
-    if (next) {
-      removeClass(prev, 'previous');
-      removeClass(current, 'current');
-      removeClass(next, 'next');
-
-      addClass(current, 'previous');
-      addClass(next, 'current');
-      addClass(following, 'next');
-
-      setSlideId(next.id);
-    }
-  }
-
-  function prevSlide() {
-    var current   = document.querySelector('.slide.current'),
-        prev      = current.previousElementSibling,
-        next      = current.nextElementSibling,
-        preceding = prev && prev.previousElementSibling;
-
-    if (prev) {
-      removeClass(next, 'next');
-      removeClass(current, 'current');
-      removeClass(prev, 'previous');
-
-      addClass(current, 'next');
-      addClass(prev, 'current');
-      addClass(preceding, 'previous');
-
-      setSlideId(prev.id);
-    }
-  }
-
-  function setSlideId(id) {
-    window.history.pushState({}, '', '#' + id);
-  }
-
-  function focusTargetSlide() {
-    var current  = document.querySelector('.slide.current'),
-        previous = document.querySelector('.slide.previous'),
-        next     = document.querySelector('.slide.next');
-
-    removeClass(current, 'current');
-    removeClass(previous, 'previous');
-    removeClass(next, 'next');
-
-    var targetSlide = document.querySelector(window.location.hash || '.slide:first-child');
-    addClass(targetSlide, 'current');
-    addClass(targetSlide.previousElementSibling, 'previous');
-    addClass(targetSlide.nextElementSibling, 'next');
-
-    // Correct for any rogue dragging that occurred.
-    setTimeout(function() {
-      window.scrollTo(0, window.scrollY);
-    }, 0);
-  }
-
-  function changeTitle() {
-    var title = 'Slidedown';  // default
-
-    var setting = Slidedown.prototype.options.slidedown.title;
-    if (typeof setting === 'string' && setting) {
-      // use the given string as title
-      title = setting;
-    }
-    else if (typeof setting === 'boolean' && setting) {
-      // use the first h1 of the md as title
-      var firstH1 = document.getElementsByTagName("h1")[0];
-      if (firstH1) {
-        title = firstH1.textContent;
-      }
-    }
-
-    document.title = title;
-    return title;
-  }
-
-  function getElementSlideNo(element) {
-    while (!(/slide/.test(element.className) || element === null)) {
-        element = element.parentNode;
-    }
-    return parseInt(element.id.substr(6));
-  }
-
-  function generateTOC() {
-    var tocElement = document.getElementById('toc');
-    if (!tocElement) return ;
-    var headings = document.querySelectorAll("h1, h2");
-    var tocMarkdownString = "";
-
-    forEach(headings, function (heading){
-      switch (heading.tagName) {
-        case 'H1':
-          tocMarkdownString += '- [' + heading.textContent + '](#slide-' + getElementSlideNo(heading) +')\n';
-        break;
-        case 'H2':
-          tocMarkdownString += '\t+ [' + heading.textContent + '](#slide-' + getElementSlideNo(heading) +')\n';
-        break;
-        default:
-      }
-    });
-
-    tocElement.innerHTML = marked(tocMarkdownString);
-  }
-
-  function goToSlide(slideNo) {
-    return function() {
-      setSlideId('slide-' + slideNo);
-      focusTargetSlide();
-    };
-  }
-
-  function goToToc() {
-    var tocElement = document.getElementById('toc');
-    if (tocElement) {
-      goToSlide(getElementSlideNo(tocElement))();
-    }
-  }
-
-  function goToRoot() {
-    location.assign(location.pathname);
-  }
 
   function CustomRenderer() {}
 
@@ -587,7 +255,7 @@ var marked = require('marked'),
   function staticize(constructor, properties) {
     var staticized = {};
 
-    forEach(properties, function(property) {
+    helper.forEach(properties, function(property) {
       staticized[property] = function() {
         var instance = new constructor();
         return instance[property].apply(instance, arguments);

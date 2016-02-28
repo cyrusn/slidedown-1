@@ -1,7 +1,9 @@
 'use strict';
 const marked = require('marked');
 const hljs = require('highlight.js');
+const Hammer = require('hammerjs');
 const deepDefaults = require('deep-defaults');
+
 const navigation = require('./navigation.js');
 const helper = require('./helper.js');
 const layout = require('./layout.js');
@@ -12,7 +14,6 @@ const parseMathJaxEquation = require('./parseMathJax');
 const plantuml = require('./plantuml.js');
 
 const XMLHttpRequest = window.XMLHttpRequest;
-const Hammer = window.Hammer;
 
 (function () {
   function Slidedown () {

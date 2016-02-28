@@ -2,32 +2,47 @@
 <html>
 
 <head>
-    <title>Slidedown</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1" />
-    <link rel="stylesheet" type="text/css" href="./lib/solarized_dark.css" />
-    <link rel="stylesheet" type="text/css" href="../dist/slidedown.build.css" />
-    <script type="text/javascript" src="../dist/slidedown.build.js"></script>
-    <script>
-        // console.log(document.location);
-        Slidedown.setOptions({
-            slidedown: {
-                enableMathJax: true,
-            },
-            mathjax: {
-                TeX: {
-                  extensions: ["mhchem.js"]
-                }
-            },
-        });
-        var params = Slidedown.parseQuery();
-        var mdSource = params.src || 'md/test.md';
-        Slidedown.fromXHR(mdSource).to('#slides');
-    </script>
+  <title>Slidedown</title>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="stylesheet" type="text/css" href="./lib/solarized_dark.css" />
+  <link rel="stylesheet" type="text/css" href="../dist/slidedown.build.css" />
+  <script type="text/javascript" src="../dist/slidedown.build.js"></script>
+  <script>
+    var params = Slidedown.parseQuery();
+    Slidedown.setOptions({
+      slidedown: {
+        enableMathJax: true,
+      },
+      mathjax: {
+        TeX: {
+          extensions: ["mhchem.js"]
+        }
+      },
+    });
+    var validateParams = new RegExp(".md$|.markdown$|.txt$", 'i');
+    var mdSource = '';
+
+    switch (true) {
+      case validateParams.test(params.src):
+        mdSource = params.src;
+        break;
+      case validateParams.test(params.db):
+        // use dropbox to share markdown file
+        // dropbox link of md file: https://www.dropbox.com/s/wqudvpda2pd2ybt/readme.md?dl=0
+        // example: http://localhost:8080?db=s/wqudvpda2pd2ybt/readme.md
+        mdSource = "https://dl.dropboxusercontent.com/" + params.db;
+        break;
+      default:
+        mdSource = 'md/test.md';
+    }
+    console.log("Source: %s", mdSource);
+    Slidedown.fromXHR(mdSource).to('#slides');
+  </script>
 </head>
 
 <body>
-    <div id="slides"></div>
+  <div id="slides"></div>
 </body>
 
 </html>

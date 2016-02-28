@@ -52,7 +52,7 @@ function encode6bit(b) {
 function compress(s) {
   //UTF8
   s = unescape(encodeURIComponent(s));
-  return "http://www.plantuml.com/plantuml/img/" + encode64(deflate(s, 9));
+  return "http://www.plantuml.com/plantuml/svg/" + encode64(deflate(s, 9));
 }
 
 module.exports = compress;

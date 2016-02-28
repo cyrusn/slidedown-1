@@ -1,10 +1,11 @@
-var slideLayouts = {
+'use strict';
+const slideLayouts = {
   'title-only': { pattern: /^H1$/ },
   'title-subtitle': { pattern: /^H1,H2$/ },
   'side-by-side': {
     pattern: /^H1,.+,H1,.+$/,
-    postprocess: function(content) {
-      var left = document.createElement('DIV');
+    postprocess: function (content) {
+      const left = document.createElement('DIV');
       left.className = 'left';
       // content.appendChild(left);
 
@@ -14,7 +15,7 @@ var slideLayouts = {
         left.appendChild(content.firstChild);
       } while (content.firstChild.tagName !== 'H1');
 
-      var right = document.createElement('DIV');
+      const right = document.createElement('DIV');
       right.className = 'right';
 
       // Insert everything else into the right pane.
@@ -28,10 +29,10 @@ var slideLayouts = {
   }
 };
 
-function getSlideLayout(parts) {
-  var key = parts.map(function(part) { return part.tagName; }).join(',');
+function getSlideLayout (parts) {
+  const key = parts.map(function (part) { return part.tagName; }).join(',');
 
-  for (var layout in slideLayouts) {
+  for (const layout in slideLayouts) {
     if (slideLayouts[layout].pattern.test(key)) {
       return layout;
     }

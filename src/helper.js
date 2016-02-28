@@ -1,20 +1,20 @@
-function inferFormat(title) {
-    var extension = title.split('.').pop();
+function inferFormat (title) {
+  var extension = title.split('.').pop();
 
-    switch (extension) {
-      case 'htm':
-      case 'html':
-        return 'HTML';
+  switch (extension) {
+    case 'htm':
+    case 'html':
+      return 'HTML';
 
-      case 'md':
-      case 'markdown':
-      default:
-        return 'Markdown';
-    }
+    case 'md':
+    case 'markdown':
+    default:
+      return 'Markdown';
+  }
 }
 
-function whenReady(callback) {
-  if (document.readyState === "complete") {
+function whenReady (callback) {
+  if (document.readyState === 'complete') {
     setTimeout(callback, 0);
     return;
   }
@@ -22,16 +22,16 @@ function whenReady(callback) {
   window.addEventListener('load', callback);
 }
 
-function forEach(collection, callback) {
+function forEach (collection, callback) {
   return Array.prototype.forEach.call(collection, callback);
 }
 
-function removeClass(element, className) {
-    if (!element) { return; }
-    element.classList.remove(className);
-  }
+function removeClass (element, className) {
+  if (!element) { return; }
+  element.classList.remove(className);
+}
 
-function addClass(element, className) {
+function addClass (element, className) {
   if (!element) { return; }
   element.classList.add(className);
 }

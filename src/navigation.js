@@ -1,15 +1,17 @@
-var helper = require('./helper.js');
+'use strict';
 
-function handleKey(keyCode, callback) {
-  document.addEventListener('keydown', function(e) {
+const helper = require('./helper.js');
+
+function handleKey (keyCode, callback) {
+  document.addEventListener('keydown', function (e) {
     if (e.keyCode === keyCode) {
       callback();
     }
   });
 }
 
-function handleTap(event) {
-  var tapLocation = event.center.x / window.innerWidth;
+function handleTap (event) {
+  let tapLocation = event.center.x / window.innerWidth;
   if (tapLocation < 0.1) {
     prevSlide();
   } else if (tapLocation > 0.9) {
@@ -17,11 +19,11 @@ function handleTap(event) {
   }
 }
 
-function nextSlide() {
-  var current   = document.querySelector('.slide.current'),
-      prev      = current.previousElementSibling,
-      next      = current.nextElementSibling,
-      following = next && next.nextElementSibling;
+function nextSlide () {
+  let current = document.querySelector('.slide.current');
+  let prev = current.previousElementSibling;
+  let next = current.nextElementSibling;
+  let following = next && next.nextElementSibling;
 
   if (next) {
     helper.removeClass(prev, 'previous');
@@ -36,11 +38,11 @@ function nextSlide() {
   }
 }
 
-function prevSlide() {
-  var current   = document.querySelector('.slide.current'),
-      prev      = current.previousElementSibling,
-      next      = current.nextElementSibling,
-      preceding = prev && prev.previousElementSibling;
+function prevSlide () {
+  let current = document.querySelector('.slide.current');
+  let prev = current.previousElementSibling;
+  let next = current.nextElementSibling;
+  let preceding = prev && prev.previousElementSibling;
 
   if (prev) {
     helper.removeClass(next, 'next');
@@ -55,53 +57,53 @@ function prevSlide() {
   }
 }
 
-function setSlideId(id) {
+function setSlideId (id) {
   window.history.pushState({}, '', '#' + id);
 }
 
-function focusTargetSlide() {
-  var current  = document.querySelector('.slide.current'),
-      previous = document.querySelector('.slide.previous'),
-      next     = document.querySelector('.slide.next');
+function focusTargetSlide () {
+  let current = document.querySelector('.slide.current');
+  let previous = document.querySelector('.slide.previous');
+  let next = document.querySelector('.slide.next');
 
   helper.removeClass(current, 'current');
   helper.removeClass(previous, 'previous');
   helper.removeClass(next, 'next');
 
-  var targetSlide = document.querySelector(window.location.hash || '.slide:first-child');
+  let targetSlide = document.querySelector(window.location.hash || '.slide:first-child');
   helper.addClass(targetSlide, 'current');
   helper.addClass(targetSlide.previousElementSibling, 'previous');
   helper.addClass(targetSlide.nextElementSibling, 'next');
 
   // Correct for any rogue dragging that occurred.
-  setTimeout(function() {
+  setTimeout(function () {
     window.scrollTo(0, window.scrollY);
   }, 0);
 }
 
-function goToRoot() {
-  location.assign(location.pathname);
+function goToRoot () {
+  window.location.assign(window.location.pathname);
 }
 
-function goToToc() {
-  var tocElement = document.getElementById('toc');
+function goToToc () {
+  let tocElement = document.getElementById('toc');
   if (tocElement) {
     goToSlide(getElementSlideNo(tocElement))();
   }
 }
 
-function goToSlide(slideNo) {
-  return function() {
+function goToSlide (slideNo) {
+  return function () {
     setSlideId('slide-' + slideNo);
     focusTargetSlide();
   };
 }
 
-function getElementSlideNo(element) {
+function getElementSlideNo (element) {
   while (!(/slide/.test(element.className) || element === null)) {
-      element = element.parentNode;
+    element = element.parentNode;
   }
-  return parseInt(element.id.substr(6));
+  return parseInt(element.id.substr(6), 10);
 }
 
 module.exports = {

@@ -1,18 +1,17 @@
-var marked = require('marked'),
-    navigation = require('./navigation.js'),
-    helper = require('./helper.js');
+const marked = require('marked');
+const navigation = require('./navigation.js');
+const helper = require('./helper.js');
 
-function changeTitle(options) {
-  var title = 'Slidedown';  // default
+function changeTitle (options) {
+  let title = 'Slidedown';  // default
 
-  var setting = options.slidedown.title;
+  const setting = options.slidedown.title;
   if (typeof setting === 'string' && setting) {
     // use the given string as title
     title = setting;
-  }
-  else if (typeof setting === 'boolean' && setting) {
+  } else if (typeof setting === 'boolean' && setting) {
     // use the first h1 of the md as title
-    var firstH1 = document.getElementsByTagName("h1")[0];
+    const firstH1 = document.getElementsByTagName('h1')[0];
     if (firstH1) {
       title = firstH1.textContent;
     }
@@ -22,20 +21,20 @@ function changeTitle(options) {
   return title;
 }
 
-function generateTOC() {
-  var tocElement = document.getElementById('toc');
-  if (!tocElement) return ;
-  var headings = document.querySelectorAll("h1, h2");
-  var tocMarkdownString = "";
+function generateTOC () {
+  const tocElement = document.getElementById('toc');
+  if (!tocElement) return;
+  const headings = document.querySelectorAll('h1, h2');
+  let tocMarkdownString = '';
 
-  helper.forEach(headings, function (heading){
+  helper.forEach(headings, function (heading) {
     switch (heading.tagName) {
       case 'H1':
-        tocMarkdownString += '- [' + heading.textContent + '](#slide-' + navigation.getElementSlideNo(heading) +')\n';
-      break;
+        tocMarkdownString += '- [' + heading.textContent + '](#slide-' + navigation.getElementSlideNo(heading) + ')\n';
+        break;
       case 'H2':
-        tocMarkdownString += '\t+ [' + heading.textContent + '](#slide-' + navigation.getElementSlideNo(heading) +')\n';
-      break;
+        tocMarkdownString += '\t+ [' + heading.textContent + '](#slide-' + navigation.getElementSlideNo(heading) + ')\n';
+        break;
       default:
     }
   });
@@ -44,6 +43,6 @@ function generateTOC() {
 }
 
 module.exports = {
-    changeTitle: changeTitle,
-    generateTOC: generateTOC
+  changeTitle: changeTitle,
+  generateTOC: generateTOC
 };

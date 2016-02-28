@@ -1,18 +1,20 @@
-var marked = require('marked'),
-    hljs   = require('highlight.js'),
-    deepDefaults = require('deep-defaults'),
-    navigation = require('./navigation.js'),
-    helper = require('./helper.js'),
-    layout = require('./layout.js'),
-    instruction = require('./instruction.js'),
-    utility = require('./utility.js'),
-    element = require('./element.js'),
-    parseMathJaxEquation = require('./parseMathJax'),
-    plantuml = require('./plantuml.js');
+const marked = require('marked');
+const hljs = require('highlight.js');
+const deepDefaults = require('deep-defaults');
+const navigation = require('./navigation.js');
+const helper = require('./helper.js');
+const layout = require('./layout.js');
+const instruction = require('./instruction.js');
+const utility = require('./utility.js');
+const element = require('./element.js');
+const parseMathJaxEquation = require('./parseMathJax');
+const plantuml = require('./plantuml.js');
 
-(function() {
+const XMLHttpRequest = window.XMLHttpRequest;
+const Hammer = window.Hammer;
 
-  function Slidedown() {
+(function () {
+  function Slidedown () {
     this.target = 'body';
   }
 
@@ -21,20 +23,20 @@ var marked = require('marked'),
     // must be put here as static variable as all
     // exported functions are staticized
     options: {
-      "marked": {
-        "breaks": true
+      'marked': {
+        'breaks': true
       },
-      "slidedown": {
+      'slidedown': {
         title: false,
         showImageCaption: false,
         enableMathJax: false
       },
-      "mathjax": {
-        src: "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
+      'mathjax': {
+        src: 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
         tex2jax: {
-          inlineMath: [['$', '$'],['$$$', '$$$']]
+          inlineMath: [['$', '$'], ['$$$', '$$$']]
         },
-        "HTML-CSS": {
+        'HTML-CSS': {
           linebreaks: {
             automatic: true
           },
@@ -44,71 +46,71 @@ var marked = require('marked'),
     },
 
     escapeHTML: (function () {
-        var MAP = {
-            '"': '&quot;', '&': '&amp;', "'": '&#39;',
-            '/': '&#47;',  '<': '&lt;',  '>': '&gt;'
-        };
+      let MAP = {
+        '"': '&quot;', '&': '&amp;', "'": '&#39;', '/': '&#47;', '<': '&lt;', '>': '&gt;'
+      };
 
-        return function (text, forAttribute) {
-          return text.replace(
-            forAttribute ? /[&<>/'"]/g : /[&<>/]/g,
-            function(c) {
-              return MAP[c];
-            }
-          );
-        };
+      return function (text, forAttribute) {
+        return text.replace(
+          forAttribute ? /[&<>/'"]/g : /[&<>/]/g,
+          function (c) {
+            return MAP[c];
+          }
+        );
+      };
     }()),
 
-    parseQuery: function parseQuery() {
-        var querystring = document.location.search;
-        // remove any preceding url and split
-        querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
-        var params = {}, pair, d = decodeURIComponent;
-        // match and parse
-        for (var i = querystring.length - 1; i >= 0; i--) {
-            pair = querystring[i].split('=');
-            params[d(pair[0])] = d(pair[1]);
-        }
+    parseQuery: function parseQuery () {
+      let querystring = document.location.search;
+      // remove any preceding url and split
+      querystring = querystring.substring(querystring.indexOf('?') + 1).split('&');
+      const params = {};
+      const d = decodeURIComponent;
+      let pair = '';
+      // match and parse
+      for (let i = querystring.length - 1; i >= 0; i--) {
+        pair = querystring[i].split('=');
+        params[d(pair[0])] = d(pair[1]);
+      }
 
-        return params;
+      return params;
     },
 
-    to: function to(target, cb) {
+    to: function to (target, cb) {
       this.target = target;
 
-      helper.whenReady(function() {
-        if (typeof cb === "function") {
+      helper.whenReady(function () {
+        if (typeof cb === 'function') {
           cb();
         }
       });
     },
 
-    destination: function destination() {
-      var destination = typeof this.target === 'string' ?
-        document.querySelector(this.target) : this.target;
-      return destination;
+    destination: function destination () {
+      return (typeof this.target === 'string')
+      ? document.querySelector(this.target) : this.target;
     },
 
-    append: function append(element) {
+    append: function append (element) {
       this.destination().appendChild(element);
     },
 
-    fromElements: function fromElements(elements) {
-      var slidedown = this;
+    fromElements: function fromElements (elements) {
+      const slidedown = this;
 
-      helper.whenReady(function() {
-        element.eachSlide(elements, function(slide, number) {
-          var element = document.createElement('DIV');
+      helper.whenReady(function () {
+        element.eachSlide(elements, function (slide, number) {
+          const element = document.createElement('DIV');
           element.id = 'slide-' + number;
           element.className = 'slide';
 
-          var content = document.createElement('DIV');
+          const content = document.createElement('DIV');
           content.className = 'content';
           content.setAttribute('data-layout', slide.layout);
           content.innerHTML = slide.html;
           element.appendChild(content);
 
-          var slideLayout = layout.slideLayouts[slide.layout];
+          const slideLayout = layout.slideLayouts[slide.layout];
           if (slideLayout && typeof slideLayout.postprocess === 'function') {
             slideLayout.postprocess(content);
           }
@@ -129,7 +131,7 @@ var marked = require('marked'),
         navigation.handleKey(36, navigation.goToSlide(1));
 
         // using `end` key to go to last page
-        var numSlides = document.getElementsByClassName('slide').length;
+        const numSlides = document.getElementsByClassName('slide').length;
         navigation.handleKey(35, navigation.goToSlide(numSlides));
 
         // using `t` to go to toc page;
@@ -141,8 +143,8 @@ var marked = require('marked'),
 
         // Hammer integration with feature detection
         if (typeof Hammer !== 'undefined') {
-          (function(Hammer) {
-            var hammer = new Hammer(document.body);
+          (function (Hammer) {
+            const hammer = new Hammer(document.body);
 
             // enable double tap
             hammer.get('tap').set({
@@ -179,33 +181,33 @@ var marked = require('marked'),
       return slidedown;
     },
 
-    fromHTML: function fromHTML(html) {
-      var elements = element.parseHTML(html);
+    fromHTML: function fromHTML (html) {
+      const elements = element.parseHTML(html);
       return this.fromElements(elements);
     },
 
-    fromMarkdown: function fromMarkdown(markdown) {
-      var markedOptions = deepDefaults({
-          renderer: new CustomRenderer()
-        },
+    fromMarkdown: function fromMarkdown (markdown) {
+      const markedOptions = deepDefaults({
+        renderer: new CustomRenderer()
+      },
         Slidedown.prototype.options.marked
       );
       marked.setOptions(
         markedOptions
       );
 
-      var html = marked(markdown);
+      const html = marked(markdown);
       return this.fromHTML(html);
     },
 
-    fromXHR: function fromXHR(title) {
-      var slidedown = this,
-          format    = helper.inferFormat(title);
+    fromXHR: function fromXHR (title) {
+      const slidedown = this;
+      const format = helper.inferFormat(title);
 
-      var request = new XMLHttpRequest();
+      const request = new XMLHttpRequest();
       request.open('GET', title);
 
-      request.addEventListener('load', function() {
+      request.addEventListener('load', function () {
         slidedown['from' + format](request.responseText);
       });
 
@@ -215,35 +217,34 @@ var marked = require('marked'),
     },
 
     // setOptions() should be run before any other function of Slidedown
-    setOptions: function setOptions(options) {
+    setOptions: function setOptions (options) {
       Slidedown.prototype.options = deepDefaults(
         options, Slidedown.prototype.options);
     }
   };
 
-  function CustomRenderer() {}
+  function CustomRenderer () {}
 
   CustomRenderer.prototype = new marked.Renderer();
 
-  CustomRenderer.prototype.image = function(href, title, text) {
+  CustomRenderer.prototype.image = function (href, title, text) {
     if (Slidedown.prototype.options.slidedown.showImageCaption === true) {
       return '<img src="' + href + '" alt="' + text + '"/><div class="caption">' + text + '</div>';
     }
-    return '<img src="' + href + '" alt="' + text +'"/>';
+    return '<img src="' + href + '" alt="' + text + '"/>';
   };
 
-  CustomRenderer.prototype.code = function code(code, lang) {
-    var html;
+  CustomRenderer.prototype.code = function code (code, lang) {
+    let html;
 
-    if (lang == 'plantuml') {
-      if(!navigator.onLine) return "<blockquote><p>Image of PlantUML <strong>cannot</strong> be loaded, image can only be loaded when connected to <strong>internet</strong></p></blockquote>";
+    if (lang === 'plantuml') {
+      if (!navigator.onLine) return '<blockquote><p>Image of PlantUML <strong>cannot</strong> be loaded, image can only be loaded when connected to <strong>internet</strong></p></blockquote>';
       return '<img class="plantuml" src="' + plantuml(code) + '"/>';
     }
 
     try {
       html = hljs.highlight(lang, code).value;
-    }
-    catch (err) {
+    } catch (err) {
       // invalid lang and other error
       // escape before rendering to HTML
       html = Slidedown.prototype.escapeHTML(code);
@@ -252,12 +253,12 @@ var marked = require('marked'),
     return '<pre class="hljs ' + lang + '">' + html + '</pre>';
   };
 
-  function staticize(constructor, properties) {
-    var staticized = {};
+  function staticize (constructor, properties) {
+    const staticized = {};
 
-    helper.forEach(properties, function(property) {
-      staticized[property] = function() {
-        var instance = new constructor();
+    helper.forEach(properties, function (property) {
+      staticized[property] = function () {
+        const instance = new constructor();
         return instance[property].apply(instance, arguments);
       };
     });
@@ -273,5 +274,4 @@ var marked = require('marked'),
     'parseQuery',
     'setOptions'
   ]);
-
 })();

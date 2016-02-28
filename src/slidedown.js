@@ -1,3 +1,4 @@
+'use strict';
 const marked = require('marked');
 const hljs = require('highlight.js');
 const deepDefaults = require('deep-defaults');
@@ -234,7 +235,7 @@ const Hammer = window.Hammer;
     return '<img src="' + href + '" alt="' + text + '"/>';
   };
 
-  CustomRenderer.prototype.code = function code (code, lang) {
+  CustomRenderer.prototype.code = function (code, lang) {
     let html;
 
     if (lang === 'plantuml') {

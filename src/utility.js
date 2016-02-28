@@ -1,3 +1,4 @@
+'use strict';
 const marked = require('marked');
 const navigation = require('./navigation.js');
 const helper = require('./helper.js');

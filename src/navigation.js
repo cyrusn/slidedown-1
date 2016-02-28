@@ -1,5 +1,4 @@
 'use strict';
-
 const helper = require('./helper.js');
 
 function handleKey (keyCode, callback) {

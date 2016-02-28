@@ -1,5 +1,4 @@
 'use strict';
-
 const helper = require('./helper.js');
 const layout = require('./layout.js');
 

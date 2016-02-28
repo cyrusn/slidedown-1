@@ -1,6 +1,7 @@
 var marked = require('marked'),
     hljs   = require('highlight.js'),
-    deepDefaults = require('deep-defaults');
+    deepDefaults = require('deep-defaults'),
+    plantuml = require('./plantuml.js');
 
 (function() {
 
@@ -565,6 +566,11 @@ var marked = require('marked'),
 
   CustomRenderer.prototype.code = function code(code, lang) {
     var html;
+
+    if (lang == 'plantuml') {
+      if(!navigator.onLine) return "<blockquote><p>Image of PlantUML <strong>cannot</strong> be loaded, image can only be loaded when connected to <strong>internet</strong></p></blockquote>";
+      return '<img class="plantuml" src="' + plantuml(code) + '"/>';
+    }
 
     try {
       html = hljs.highlight(lang, code).value;

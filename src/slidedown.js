@@ -1,6 +1,7 @@
 var marked = require('marked'),
     hljs   = require('highlight.js'),
-    deepDefaults = require('deep-defaults');
+    deepDefaults = require('deep-defaults'),
+    Hammer = require('hammerjs');
 
 (function() {
 
@@ -149,29 +150,25 @@ var marked = require('marked'),
         handleKey(82, goToRoot);
 
         // Hammer integration with feature detection
-        if (typeof Hammer !== 'undefined') {
-          (function(Hammer) {
-            var hammer = new Hammer(document.body);
+        var hammer = new Hammer(document.body);
 
-            // enable double tap
-            hammer.get('tap').set({
-              touchAction: 'multitap'
-            });
+        // enable double tap
+        hammer.get('tap').set({
+          touchAction: 'multitap'
+        });
 
-            // swipe left and right to change slide
-            hammer.on('swipeleft', nextSlide);
-            hammer.on('swiperight', prevSlide);
+        // swipe left and right to change slide
+        hammer.on('swipeleft', nextSlide);
+        hammer.on('swiperight', prevSlide);
 
-            // tap to flip slides
-            hammer.on('tap', handleTap);
+        // tap to flip slides
+        hammer.on('tap', handleTap);
 
-            // press and hold to go to root page
-            hammer.on('press', goToRoot);
+        // press and hold to go to root page
+        hammer.on('press', goToRoot);
 
-            // double tap to go to toc page
-            hammer.on('doubletap', goToToc);
-          }(Hammer));
-        }
+        // double tap to go to toc page
+        hammer.on('doubletap', goToToc);
 
         // Change title to the first h1 of md
         changeTitle();

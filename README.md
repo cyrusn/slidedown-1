@@ -5,10 +5,10 @@
 
 Write in Markdown. Slidedown will help you render the file into pretty slides.
 
-All magic happens on the client side. A proper loader (`index.html`) is required.  
+All magic happens on the client side. A proper loader (`index.html`) is required.
 The good news is, you don't have to prepare your own!!!
 
-This repo contains the source codes for building the core lib, styles and themes.  
+This repo contains the source codes for building the core lib, styles and themes.
 Please see [slidedown/slidedown.github.io](https://github.com/slidedown/slidedown.github.io) for usage.
 
 ## Development Flow
@@ -25,8 +25,9 @@ Please see [slidedown/slidedown.github.io](https://github.com/slidedown/slidedow
 ### 1. Development
 
 ```sh
-# for development, build to slidedown.github.io/lib
-~/slidedown/slidedown$ SLIDEDOWN_DEST=../slidedown.github.io/lib gulp
+# for development, build to test/lib
+~/slidedown/slidedown$ npm run watch-js
+~/slidedown/slidedown$ npm run watch-css
 # serve loader with HTTP server
 ~/slidedown/slidedown/test$ ecstatic  # OR
 ~/slidedown/slidedown/test$ http-server
@@ -43,7 +44,7 @@ Please see [slidedown/slidedown.github.io](https://github.com/slidedown/slidedow
 ~/slidedown$ git clone git@github.com:slidedown/slidedown.github.io.git
 
 # for release, build to dist (the default)
-~/slidedown/slidedown$ gulp
+~/slidedown/slidedown$ npm run build
 # increment version number in package.json
 ~/slidedown/slidedown$ git add -f package.json dist/*
 
@@ -70,5 +71,5 @@ Please see [slidedown/slidedown.github.io](https://github.com/slidedown/slidedow
 
 ## Attribution
 
-@dtao started [this project](https://github.com/dtao/slidedown) (big thanks BTW).  
+@dtao started [this project](https://github.com/dtao/slidedown) (big thanks BTW).
 @cyrusn and @leesei discovered it, added features to it and created this organization.

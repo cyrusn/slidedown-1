@@ -18,10 +18,10 @@
   "homepage": "https://github.com/slidedown/slidedown",
   "scripts": {
     "build": "npm run build-js && npm run build-css",
+    "watch-js": "watchify ./src/slidedown.js -o ./test/lib/slidedown.build.js -dv",
+    "watch-css": "nodemon -e scss -x 'node-sass --include-path style style/slidedown.scss ./test/lib/slidedown.build.css'",
     "build-js": "NODE_ENV=production browserify ./src/slidedown.js | uglifyjs -cm > ./dist/slidedown.build.min.js",
-    "watch-js": "watchify ./src/slidedown.js -o ./dist/slidedown.build.js -dv",
-    "build-css": "node-sass --include-path style style/slidedown.scss ./dist/slidedown.build.min.css --output-style compressed",
-    "watch-css": "nodemon -e scss -x 'node-sass --include-path style style/slidedown.scss ./dist/slidedown.build.css'"
+    "build-css": "node-sass --include-path style style/slidedown.scss ./dist/slidedown.build.min.css --output-style compressed"
   },
   "browserify": {
     "transform": [
@@ -40,6 +40,8 @@
     "marked": "^0.3.3"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.5.0",
+    "babelify": "^7.2.0",
     "node-sass": "^3.4.2",
     "nodemon": "^1.8.1",
     "uglifyjs": "^2.4.10",

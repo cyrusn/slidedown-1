@@ -28,3 +28,4 @@ node_modules
 
 # manually add built files in dist/ upon release
 dist/
+test/lib/slidedown.build*

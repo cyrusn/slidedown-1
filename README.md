@@ -25,8 +25,9 @@ Please see [slidedown/slidedown.github.io](https://github.com/slidedown/slidedow
 ### 1. Development
 
 ```sh
-# for development, build to slidedown.github.io/lib
-~/slidedown/slidedown$ SLIDEDOWN_DEST=../slidedown.github.io/lib gulp
+# for development, build to ./test/lib
+~/slidedown/slidedown$ npm run watch-js
+~/slidedown/slidedown$ npm run watch-css
 # serve loader with HTTP server
 ~/slidedown/slidedown/test$ ecstatic  # OR
 ~/slidedown/slidedown/test$ http-server
